@@ -47,4 +47,9 @@ app.use("/api/shop/search", shopSearchRouter);
 app.use("/api/shop/review", shopReviewRouter);
 app.use("/api/common/feature", commonFeatureRouter);
 
+const router = express.Router()
+
+router.get('/', (req,res)=> res.send("heloo there") )
+
+
 app.listen(PORT, () => console.log(`Server is now running on port ${PORT}`));
