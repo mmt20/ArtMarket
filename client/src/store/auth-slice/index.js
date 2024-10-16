@@ -6,13 +6,12 @@ const initialState = {
   isLoading: true,
   user: null,
 };
-
 export const registerUser = createAsyncThunk(
   "/auth/register",
 
   async (formData) => {
     const response = await axios.post(
-      `${process.env.SERVER_URL}api/auth/register`,
+      `https://art-market-blue.vercel.app/api/auth/register`,
       formData,
       {
         withCredentials: true,
@@ -28,7 +27,7 @@ export const loginUser = createAsyncThunk(
 
   async (formData) => {
     const response = await axios.post(
-      `${process.env.SERVER_URL}api/auth/login`,
+      `https://art-market-blue.vercel.app/api/auth/login`,
       formData,
       {
         withCredentials: true,
@@ -44,7 +43,7 @@ export const logoutUser = createAsyncThunk(
 
   async () => {
     const response = await axios.post(
-      `${process.env.SERVER_URL}api/auth/logout`,
+      `https://art-market-blue.vercel.app/api/auth/logout`,
       {},
       {
         withCredentials: true,
@@ -60,7 +59,7 @@ export const checkAuth = createAsyncThunk(
 
   async () => {
     const response = await axios.get(
-      `${process.env.SERVER_URL}api/auth/check-auth`,
+      `https://art-market-blue.vercel.app/api/auth/check-auth`,
       {
         withCredentials: true,
         headers: {
