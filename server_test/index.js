@@ -14,26 +14,26 @@ import commonFeatureRouter from "./routes/common/feature-routes.js";
 
 
 const app = express();
-// const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000;
 
 // Middleware to parse JSON requests
 app.use(cookieParser());
 app.use(express.json());
 
-// app.use(
-//   cors({
-//     origin: "http://localhost:5173",
-//     methods: ["GET", "POST", "DELETE", "PUT"],
-//     allowedHeaders: [
-//       "Content-Type",
-//       "Authorization",
-//       "Cache-Control",
-//       "Expires",
-//       "Pragma",
-//     ],
-//     credentials: true,
-//   })
-// );
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "DELETE", "PUT"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "Cache-Control",
+      "Expires",
+      "Pragma",
+    ],
+    credentials: true,
+  })
+);
 
 // Define a basic route
 app.get('/', (req, res) => {
@@ -57,7 +57,7 @@ app.get('/api/message', (req, res) => {
   res.json({ message: 'Hello, this is a message from the API!' });
 });
 
-app.listen(PORT, () => console.log(`Server is now running on port ${PORT}`));
+// app.listen(PORT, () => console.log(`Server is now running on port ${PORT}`));
 
 // Export the Express app for Vercel to use as a serverless function
 export default app;
