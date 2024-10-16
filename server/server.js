@@ -17,9 +17,20 @@ import commonFeatureRouter from "./routes/common/feature-routes.js";
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const allowedOrigins = [
+  "http://localhost:5173",   // Vite dev server
+  "https://art-market-fbss.vercel.app"  // Production server on Vercel
+];
+
 app.use(
   cors({
-    origin: "https://art-market-fbss.vercel.app/",
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST", "DELETE", "PUT"],
     allowedHeaders: [
       "Content-Type",
@@ -28,10 +39,9 @@ app.use(
       "Expires",
       "Pragma",
     ],
-    credentials: true,
+    credentials: true,  // Allow cookies
   })
 );
-
 app.use(cookieParser());
 app.use(express.json());
 
