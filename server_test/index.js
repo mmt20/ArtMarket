@@ -22,7 +22,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "*",
     methods: ["GET", "POST", "DELETE", "PUT"],
     allowedHeaders: [
       "Content-Type",
@@ -41,16 +41,16 @@ app.get('/', (req, res) => {
 });
 
 
-// app.use("/api/auth", authRouter);
-// app.use("/api/admin/products", adminProductsRouter);
-// app.use("/api/admin/orders", adminOrderRouter);
-// app.use("/api/shop/products", shopProductsRouter);
-// app.use("/api/shop/cart", shopCartRouter);
-// app.use("/api/shop/address", shopAddressRouter);
-// app.use("/api/shop/order", shopOrderRouter);
-// app.use("/api/shop/search", shopSearchRouter);
-// app.use("/api/shop/review", shopReviewRouter);
-// app.use("/api/common/feature", commonFeatureRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/admin/products", adminProductsRouter);
+app.use("/api/admin/orders", adminOrderRouter);
+app.use("/api/shop/products", shopProductsRouter);
+app.use("/api/shop/cart", shopCartRouter);
+app.use("/api/shop/address", shopAddressRouter);
+app.use("/api/shop/order", shopOrderRouter);
+app.use("/api/shop/search", shopSearchRouter);
+app.use("/api/shop/review", shopReviewRouter);
+app.use("/api/common/feature", commonFeatureRouter);
 
 // Define a sample API route
 app.get('/api/message', (req, res) => {
