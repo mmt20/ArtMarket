@@ -9,7 +9,6 @@
     "build": "server.js",
     "dev": "nodemon server.js"
   },
-  "author": "sangam mukherjee",
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^5.20.0",
@@ -20,10 +19,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.5.3",
     "multer": "^1.4.5-lts.1",
-    "netlify-cli": "^17.37.0",
-    "netlify-lambda": "^2.0.16",
     "nodemon": "^3.1.4",
     "paypal-rest-sdk": "^1.8.1",
     "serverless-http": "^3.2.0"
