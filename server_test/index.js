@@ -20,20 +20,20 @@ const PORT = process.env.PORT || 5000;
 app.use(cookieParser());
 app.use(express.json());
 
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST", "DELETE", "PUT"],
-    allowedHeaders: [
-      "Content-Type",
-      "Authorization",
-      "Cache-Control",
-      "Expires",
-      "Pragma",
-    ],
-    credentials: true,
-  })
-);
+// app.use(
+//   cors({
+//     origin: "http://localhost:5173",
+//     methods: ["GET", "POST", "DELETE", "PUT"],
+//     allowedHeaders: [
+//       "Content-Type",
+//       "Authorization",
+//       "Cache-Control",
+//       "Expires",
+//       "Pragma",
+//     ],
+//     credentials: true,
+//   })
+// );
 
 // Define a basic route
 app.get('/', (req, res) => {
