@@ -54,7 +54,7 @@ function ProductImageUpload({
     data.append("image", imageFile);
 
     const response = await axios.post(
-      "http://localhost:5000/api/admin/products/upload-image",
+      `${process.env.SERVER_URL}api/admin/products/upload-image`,
       data,{
         headers: {
           'Content-Type': 'multipart/form-data',
