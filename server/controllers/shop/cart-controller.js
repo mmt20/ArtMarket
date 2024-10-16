@@ -132,7 +132,7 @@ export const updateCartItemQty = async (req, res) => {
 
     const cart = await prisma.cart.findFirst({
       where: { userId: parseInt(userId) },
-      include: { items: true }
+      include: { items: { include: { product: true } } }
     });
 
     if (!cart) {
@@ -163,7 +163,7 @@ export const updateCartItemQty = async (req, res) => {
 
     const updatedCart = await prisma.cart.findFirst({
       where: { id: parseInt(cart.id) },
-      include: { items: true }
+      include: { items: { include: { product: true } } }
     });
 
     res.status(200).json({
