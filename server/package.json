@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "server.js",
+    "build": "prisma generate && node index.js",
+    "postinstall": "prisma generate",
+    "start": "prisma generate && node index.js",
     "dev": "nodemon server.js"
   },
   "license": "ISC",
