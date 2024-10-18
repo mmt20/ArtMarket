@@ -10,7 +10,12 @@
     {
       "src": "/(.*)",
       "dest": "server.js",
-      "methods": ["GET", "POST", "DELETE", "PUT"]
+      "methods": ["GET", "POST", "DELETE", "PUT", "OPTIONS"],
+      "headers": {
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Origin": "https://art-market-fbss.vercel.app",
+        "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT"
+      }
     }
   ]
 }
