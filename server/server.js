@@ -19,7 +19,8 @@ const PORT = process.env.PORT || 5000;
 
 app.use(
   cors({
-    origin: "https://art-market-fbss.vercel.app/",
+    origin: 'https://art-market-fbss.vercel.app',
+    
     methods: ["GET", "POST", "DELETE", "PUT"],
     allowedHeaders: [
       "Content-Type",
@@ -28,7 +29,7 @@ app.use(
       "Expires",
       "Pragma",
     ],
-    credentials: true,
+    credentials: false,
   })
 );
 
