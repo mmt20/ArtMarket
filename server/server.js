@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use(
   cors({
-    origin: 'https://art-market-fbss.vercel.app',
+    origin: ['https://art-market-fbss.vercel.app', "http://localhost:5173"],
     
     methods: ["GET", "POST", "DELETE", "PUT"],
     allowedHeaders: [
