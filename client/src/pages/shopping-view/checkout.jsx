@@ -95,7 +95,7 @@ function ShoppingCheckout() {
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col dark:bg-background">
       <div className="relative h-[450px] w-full overflow-hidden">
         <img src="/khara-woods-KR84RpMCb0w-unsplash.jpg" className="h-full w-full object-cover object-center" />
       </div>

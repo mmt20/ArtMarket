@@ -23,6 +23,7 @@ import UserCartWrapper from "./cart-wrapper";
 import { useEffect, useState } from "react";
 import { fetchCartItems } from "@/store/shop/cart-slice";
 import { Label } from "../ui/label";
+import { ModeToggle } from "../common/mode-toggle";
 
 function MenuItems() {
   const navigate = useNavigate();
@@ -105,6 +106,8 @@ function HeaderRightContent() {
           }
         />
       </Sheet>
+      <ModeToggle />
+
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -149,6 +152,7 @@ function ShoppingHeader() {
         <Link to="/shop/home" className="flex items-center gap-2">
           <HousePlug className="h-6 w-6" />
           <span className="font-bold">ArtMarket</span>
+
         </Link>
         <Sheet>
           <SheetTrigger asChild>
@@ -160,6 +164,7 @@ function ShoppingHeader() {
           <SheetContent side="left" className="w-full max-w-xs">
             <MenuItems />
             <HeaderRightContent />
+            
           </SheetContent>
         </Sheet>
         <div className="hidden lg:block">

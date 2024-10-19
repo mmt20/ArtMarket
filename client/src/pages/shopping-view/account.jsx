@@ -4,7 +4,7 @@ import ShoppingOrders from "@/components/shopping-view/orders";
 
 function ShoppingAccount() {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col dark:bg-background">
       <div className="relative h-[300px] w-full overflow-hidden">
         <img
           src={accImg}
