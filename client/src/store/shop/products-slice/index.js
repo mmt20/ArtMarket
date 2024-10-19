@@ -18,7 +18,7 @@ export const fetchAllFilteredProducts = createAsyncThunk(
     });
 
     const result = await axios.get(
-      `${process.env.VITE_SERVER_URL}api/shop/products/get?${query}`
+      `https://art-market-blue.vercel.app/api/shop/products/get?${query}`
     );
 
     console.log(result);
@@ -31,7 +31,7 @@ export const fetchProductDetails = createAsyncThunk(
   "/products/fetchProductDetails",
   async (id) => {
     const result = await axios.get(
-      `${process.env.VITE_SERVER_URL}api/shop/products/get/${id}`
+      `https://art-market-blue.vercel.app/api/shop/products/get/${id}`
     );
 
     return result?.data;

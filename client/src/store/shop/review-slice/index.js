@@ -10,7 +10,7 @@ export const addReview = createAsyncThunk(
   "/order/addReview",
   async (formdata) => {
     const response = await axios.post(
-      `${process.env.VITE_SERVER_URL}api/shop/review/add`,
+      `https://art-market-blue.vercel.app/api/shop/review/add`,
       formdata
     );
 
@@ -20,7 +20,7 @@ export const addReview = createAsyncThunk(
 
 export const getReviews = createAsyncThunk("/order/getReviews", async (id) => {
   const response = await axios.get(
-    `${process.env.VITE_SERVER_URL}api/shop/review/${id}`
+    `https://art-market-blue.vercel.app/api/shop/review/${id}`
   );
 
   return response.data;

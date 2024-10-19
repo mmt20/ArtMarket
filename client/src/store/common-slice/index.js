@@ -10,7 +10,7 @@ export const getFeatureImages = createAsyncThunk(
   "/order/getFeatureImages",
   async () => {
     const response = await axios.get(
-      `${process.env.VITE_SERVER_URL}api/common/feature/get`
+      `https://art-market-blue.vercel.app/api/common/feature/get`
     );
 
     return response.data;
@@ -21,7 +21,7 @@ export const addFeatureImage = createAsyncThunk(
   "/order/addFeatureImage",
   async (image) => {
     const response = await axios.post(
-      `${process.env.VITE_SERVER_URL}api/common/feature/add`,
+      `https://art-market-blue.vercel.app/api/common/feature/add`,
       { image }
     );
 
