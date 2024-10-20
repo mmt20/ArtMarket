@@ -15,22 +15,25 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  userName  String   @unique
-  email     String   @unique
-  password  String
-  role      String   @default("user")
-
+  id                    Int             @id @default(autoincrement())
+  userName              String          @unique
+  email                 String          @unique
+  password              String
+  role                  String          @default("user")
+  passwordResetCode     String
+  passwordResetExpires  DateTime
+  passwordResetVerified Boolean
   // Relations
-  addresses Address[]
-  orders    Order[]
-  carts     Cart[]
-  reviews   ProductReview[]
+  addresses             Address[]
+  orders                Order[]
+  carts                 Cart[]
+  reviews               ProductReview[]
 }
+
 model ProductReview {
   id            Int      @id @default(autoincrement())
-  productId     Int      // Foreign key, can be related later
-  userId        Int      // Foreign key, can be related later
+  productId     Int // Foreign key, can be related later
+  userId        Int // Foreign key, can be related later
   userName      String
   reviewMessage String
   reviewValue   Int
@@ -38,9 +41,10 @@ model ProductReview {
   updatedAt     DateTime @updatedAt
 
   // Relations
-  user   User   @relation(fields: [userId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
   product Product @relation(fields: [productId], references: [id])
 }
+
 model Product {
   id            Int      @id @default(autoincrement())
   image         String?
@@ -56,22 +60,22 @@ model Product {
   updatedAt     DateTime @updatedAt
 
   // Relations
-  reviews ProductReview[]
+  reviews   ProductReview[]
   cartItems CartItem[]
 }
 
 model Order {
-  id             Int      @id @default(autoincrement())
-  userId         Int
-  cartId         Int
-  orderStatus    String
-  paymentMethod  String
-  paymentStatus  String
-  totalAmount    Float
-  orderDate      DateTime  @default(now())
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  cartId          Int
+  orderStatus     String
+  paymentMethod   String
+  paymentStatus   String
+  totalAmount     Float
+  orderDate       DateTime @default(now())
   orderUpdateDate DateTime
-  paymentId      String?
-  payerId        String?
+  paymentId       String?
+  payerId         String?
 
   // Address Info
   addressId String?
@@ -82,10 +86,9 @@ model Order {
   notes     String?
 
   // Relations
-  user   User @relation(fields: [userId], references: [id])
-  cart   Cart @relation(fields: [cartId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+  cart Cart @relation(fields: [cartId], references: [id])
 }
-
 
 model Feature {
   id        Int      @id @default(autoincrement())
@@ -93,30 +96,29 @@ model Feature {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
 model Cart {
-  id        Int      @id @default(autoincrement())
+  id        Int        @id @default(autoincrement())
   userId    Int
   items     CartItem[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
   // Relations
-  user   User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 
   Order Order[]
 }
 
 model CartItem {
-  id        Int      @id @default(autoincrement())
+  id        Int @id @default(autoincrement())
   cartId    Int
   productId Int
-  quantity  Int      @default(1)
+  quantity  Int @default(1)
 
   // Relations
   cart    Cart    @relation(fields: [cartId], references: [id])
   product Product @relation(fields: [productId], references: [id])
-
-
 }
 
 model Address {

@@ -1,9 +1,13 @@
 import express from "express";
-import { registerUser, loginUser, logoutUser, authMiddleware } from "../../controllers/auth/auth-controller.js";
+import { registerUser,forgetPassword, verifyResetCode, updatePassword,loginUser, logoutUser, authMiddleware } from "../../controllers/auth/auth-controller.js";
 
 const router = express.Router();
 
 router.post("/register", registerUser);
+router.post("/forgot-password", forgetPassword);
+router.post("/verify-reset-code", verifyResetCode);
+router.patch('/update-password', authMiddleware, updatePassword);
+
 router.post("/login", loginUser);
 router.post("/logout", logoutUser);
 router.get("/check-auth", authMiddleware, (req, res) => {

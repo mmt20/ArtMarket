@@ -1,8 +1,218 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
+import sendEmail from "../../helpers/email.js";
+import crypto from "crypto";
 
 const prisma = new PrismaClient();
+
+export const forgetPassword = async (req, res, next) => {
+  const { email } = req.body;
+
+  try {
+    // Check if user exists
+    const checkUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!checkUser) {
+      return res.status(404).json({
+        success: false,
+        message: "Email not found",
+      });
+    }
+
+    // Generate reset code and hash it
+    const resetCode = Math.floor(Math.random() * 899999 + 100000).toString();
+    const hashCode = crypto.createHash("md5").update(resetCode).digest("hex");
+
+    // Update the user in the database
+    await prisma.user.update({
+      where: { email },
+      data: {
+        passwordResetCode: hashCode,
+        passwordResetExpires: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes expiration
+        passwordResetVerified: false,
+      },
+    });
+
+    const message = `Hi ${checkUser.userName}, 
+    You have received the following reset code:
+    ${resetCode}
+    This code is valid for 10 minutes.`;
+
+    // Send the reset email
+    await sendEmail({
+      email: checkUser.email,
+      subject: "Your password reset code (valid for 10 minutes)",
+      message: message,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Reset code sent to email",
+    });
+  } catch (err) {
+    console.error(err);
+
+    // Rollback any password reset information in case of an error
+    await prisma.user.update({
+      where: { email },
+      data: {
+        passwordResetCode: null,
+        passwordResetExpires: null,
+        passwordResetVerified: null,
+      },
+    });
+
+    res.status(500).json({
+      success: false,
+      message: "There was a problem resetting your password",
+    });
+  }
+};
+
+// after Sending the reset email verify the code with new password and Confirm Password
+export const verifyResetCode = async (req, res, next) => {
+  const { email } = req.body;
+
+  try {
+    // Hash the provided reset code
+    const hashResetCode = crypto
+      .createHash("md5")
+      .update(req.body.resetCode)
+      .digest("hex");
+
+    // Find the user by reset code and check if the code is still valid
+    const user = await prisma.user.findFirst({
+      where: {
+        email:email,
+        passwordResetCode: hashResetCode,
+        passwordResetExpires: {
+          gt: new Date(), // the reset code hasn't expired
+        },
+      },
+    });
+
+    if (!user) {
+      return res.json({
+        success: false,
+        message: "Reset code invalid or expired",
+      });
+    }
+
+    // Check if password and confirmPassword match
+    if (req.body.password !== req.body.confirmPassword) {
+      return res.json({
+        success: false,
+        message: "Password does not match Confirm Password",
+      });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(req.body.password, 12);
+
+    // Update the user with the new password
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+        passwordResetCode: null,
+        passwordResetExpires: null,
+        passwordResetVerified: true,
+        passwordChangedAt: new Date(),
+      },
+    });
+
+    res
+      .status(200)
+      .json({ success: true, message: "Password reset successful" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "An error occurred" });
+  }
+};
+//Update Password
+// Function to create JWT token
+// const createToken = (userId) => {
+//   return jwt.sign({ id: userId }, "CLIENT_SECRET_KEY", { expiresIn: "60m" });
+// };
+
+export const updatePassword = async (req, res) => {
+  
+  try {
+    // Find the user by the current logged-in user's id
+    const user = await prisma.user.findUnique({
+      where: { id: req.currentUser.id },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Check if the current password is correct
+    const isPasswordCorrect = await bcrypt.compare(
+      req.body.currentPassword,
+      user.password
+    );
+
+    if (!isPasswordCorrect) {
+      return res.status(400).json({
+        success: false,
+        message: "The current password is incorrect",
+      });
+    }
+
+    // Check if newPassword and confirmPassword match
+    if (req.body.newPassword !== req.body.confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "New password and confirm password do not match",
+      });
+    }
+
+    // Hash the new password
+    const hashedNewPassword = await bcrypt.hash(req.body.newPassword, 12);
+
+    // Update the user's password in the database
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashedNewPassword,
+        passwordChangedAt: new Date(),
+      },
+    });
+
+    // Generate a new token for the user
+    const tokenLogin =  jwt.sign(
+      {
+        id: parseInt(user.id),
+        role: user.role,
+        email: user.email,
+        userName: user.userName,
+      },
+      "CLIENT_SECRET_KEY",
+      { expiresIn: "60m" }
+    );;
+
+    // Send response with the new token
+    res.status(200).json({
+      status: "success",
+      data: {
+        token: tokenLogin,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while updating the password",
+    });
+  }
+};
 
 // Register User
 export const registerUser = async (req, res) => {
