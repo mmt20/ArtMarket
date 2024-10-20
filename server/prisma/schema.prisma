@@ -23,6 +23,8 @@ model User {
   passwordResetCode     String?
   passwordResetExpires  DateTime?
   passwordResetVerified Boolean?
+  @@index([email])  // Creating index on the email field for faster lookups
+
   // Relations
   addresses             Address[]
   orders                Order[]

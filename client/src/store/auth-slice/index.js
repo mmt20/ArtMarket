@@ -6,6 +6,7 @@ const initialState = {
   isLoading: true,
   user: null,
 };
+
 export const registerUser = createAsyncThunk(
   "/auth/register",
 
@@ -28,6 +29,37 @@ export const loginUser = createAsyncThunk(
   async (formData) => {
     const response = await axios.post(
       `https://art-market-blue.vercel.app/api/auth/login`,
+      formData,
+      {
+        withCredentials: true,
+      }
+    );
+
+    return response.data;
+  }
+);
+export const ForgotPassword = createAsyncThunk(
+  "/auth/forgot-password",
+
+  async (formData) => {
+    const response = await axios.post(
+      `https://art-market-blue.vercel.app/api/auth/forgot-password`,
+      formData,
+      {
+        withCredentials: true,
+      }
+    );
+
+    return response.data;
+  }
+);
+
+export const resetpassword = createAsyncThunk(
+  "/auth/reset",
+
+  async (formData) => {
+    const response = await axios.post(
+      `https://art-market-blue.vercel.app/api/auth/reset-password`,
       formData,
       {
         withCredentials: true,
@@ -94,6 +126,19 @@ const authSlice = createSlice({
         state.user = null;
         state.isAuthenticated = false;
       })
+      .addCase(resetpassword.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(resetpassword.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = null;
+        state.isAuthenticated = false;
+      })
+      .addCase(resetpassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.user = null;
+        state.isAuthenticated = false;
+      })
       .addCase(loginUser.pending, (state) => {
         state.isLoading = true;
       })
@@ -109,6 +154,22 @@ const authSlice = createSlice({
         state.user = null;
         state.isAuthenticated = false;
       })
+      .addCase(ForgotPassword.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(ForgotPassword.fulfilled, (state, action) => {
+        console.log(action);
+
+        state.isLoading = false;
+        state.user = action.payload.success ? action.payload.user : null;
+        state.isAuthenticated = action.payload.success;
+      })
+      .addCase(ForgotPassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.user = null;
+        state.isAuthenticated = false;
+      })
+      
       .addCase(checkAuth.pending, (state) => {
         state.isLoading = true;
       })

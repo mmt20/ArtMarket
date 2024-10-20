@@ -74,13 +74,13 @@ export const forgetPassword = async (req, res, next) => {
 
 // after Sending the reset email verify the code with new password and Confirm Password
 export const verifyResetCode = async (req, res, next) => {
-  const { email } = req.body;
-
+  const { email , resetCode , password} = req.body;
+  console.log(resetCode)
   try {
     // Hash the provided reset code
     const hashResetCode = crypto
       .createHash("md5")
-      .update(req.body.resetCode)
+      .update(resetCode)
       .digest("hex");
 
     // Find the user by reset code and check if the code is still valid
@@ -88,12 +88,13 @@ export const verifyResetCode = async (req, res, next) => {
       where: {
         email:email,
         passwordResetCode: hashResetCode,
-        passwordResetExpires: {
-          gt: new Date(), // the reset code hasn't expired
-        },
+        // passwordResetExpires: {
+        //   gt: new Date(), // the reset code hasn't expired
+        // },
+        
       },
     });
-
+    
     if (!user) {
       return res.json({
         success: false,
@@ -102,31 +103,33 @@ export const verifyResetCode = async (req, res, next) => {
     }
 
     // Check if password and confirmPassword match
-    if (req.body.password !== req.body.confirmPassword) {
-      return res.json({
-        success: false,
-        message: "Password does not match Confirm Password",
-      });
-    }
+    // if (req.body.password !== req.body.confirmPassword) {
+    //   return res.json({
+    //     success: false,
+    //     message: "Password does not match Confirm Password",
+    //   });
+    // }
 
     // Hash the new password
     const hashedPassword = await bcrypt.hash(req.body.password, 12);
 
-    // Update the user with the new password
+    // // Update the user with the new password
     await prisma.user.update({
-      where: { id: user.id },
+      where: { email },
       data: {
         password: hashedPassword,
         passwordResetCode: null,
         passwordResetExpires: null,
         passwordResetVerified: true,
-        passwordChangedAt: new Date(),
+        // passwordChangedAt: new Date(),
       },
     });
 
     res
       .status(200)
-      .json({ success: true, message: "Password reset successful" });
+      .json({ success: true, message: "OTP verification successful" });
+
+    next() 
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: "An error occurred" });
@@ -196,7 +199,7 @@ export const updatePassword = async (req, res) => {
       },
       "CLIENT_SECRET_KEY",
       { expiresIn: "60m" }
-    );;
+    );
 
     // Send response with the new token
     res.status(200).json({

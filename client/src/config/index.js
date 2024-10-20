@@ -38,6 +38,15 @@ export const loginFormControls = [
     type: "password",
   },
 ];
+export const forgotPasswordFormControls = [
+  {
+    name: "email",
+    label: "Email",
+    placeholder: "Enter your email",
+    componentType: "input",
+    type: "email",
+  },
+];
 
 export const addProductFormElements = [
   {

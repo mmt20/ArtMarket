@@ -1,6 +1,6 @@
 import CommonForm from "@/components/common/form";
 import { useToast } from "@/components/ui/use-toast";
-import { loginFormControls } from "@/config";
+import { forgotPasswordFormControls } from "@/config";
 import { loginUser } from "@/store/auth-slice";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -8,7 +8,6 @@ import { Link } from "react-router-dom";
 
 const initialState = {
   email: "",
-  password: "",
 };
 
 function ForgotPassword() {
@@ -41,7 +40,7 @@ function ForgotPassword() {
         </h1>
       </div>
       <CommonForm
-        formControls={loginFormControls}
+        formControls={forgotPasswordFormControls}
         buttonText={"Update"}
         formData={formData}
         setFormData={setFormData}
