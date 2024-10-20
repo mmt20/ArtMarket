@@ -20,9 +20,9 @@ model User {
   email                 String          @unique
   password              String
   role                  String          @default("user")
-  passwordResetCode     String
-  passwordResetExpires  DateTime
-  passwordResetVerified Boolean
+  passwordResetCode     String?
+  passwordResetExpires  DateTime?
+  passwordResetVerified Boolean?
   // Relations
   addresses             Address[]
   orders                Order[]
