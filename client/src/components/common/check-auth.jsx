@@ -22,10 +22,10 @@ function CheckAuth({ isAuthenticated, user, children }) {
     !isAuthenticated &&
     !(
       location.pathname.includes("/login") ||
-      location.pathname.includes("/register")
+      location.pathname.includes("/register")|| <Navigate to="/auth/forgot-password" /> || <Navigate to="/auth/reset-password" />
     )
   ) {
-    return <Navigate to="/auth/login" /> || <Navigate to="/auth/forgot-password" /> || <Navigate to="/auth/reset-password" />;
+    return <Navigate to="/auth/login" />  ;
   }
 
   if (
