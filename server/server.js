@@ -16,11 +16,37 @@ import commonFeatureRouter from "./routes/common/feature-routes.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+// List of allowed origins
+const allowedOrigins = [
+  "http://localhost:3000", // Local development
+  "https://art-market-fbss.vercel.app", // Production
+  "http://localhost:5173/", // Another allowed domain
+];
 
+// Configure CORS middleware dynamically
+// const corsOptions = {
+//   origin: (origin, callback) => {
+//     // If the origin is in the list of allowed origins or no origin (like in Postman requests), allow it
+//     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+//   methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
+//   credentials: true, // Enable credentials (cookies, authorization headers)
+// };
 app.use(
   cors({
     // origin: 'https://art-market-fbss.vercel.app',
-    origin: ["https://art-market-fbss.vercel.app", "http://localhost:5173/"],
+    origin: (origin, callback) => {
+      // If the origin is in the list of allowed origins or no origin (like in Postman requests), allow it
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     
     methods: ["GET", "POST", "DELETE", "PUT"],
     allowedHeaders: [
