@@ -154,17 +154,17 @@ const authSlice = createSlice({
         state.user = null;
         state.isAuthenticated = false;
       })
-      .addCase(ForgotPassword.pending, (state) => {
+      .addCase(forgotPassword.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(ForgotPassword.fulfilled, (state, action) => {
+      .addCase(forgotPassword.fulfilled, (state, action) => {
         console.log(action);
 
         state.isLoading = false;
         state.user = action.payload.success ? action.payload.user : null;
         state.isAuthenticated = action.payload.success;
       })
-      .addCase(ForgotPassword.rejected, (state, action) => {
+      .addCase(forgotPassword.rejected, (state, action) => {
         state.isLoading = false;
         state.user = null;
         state.isAuthenticated = false;
