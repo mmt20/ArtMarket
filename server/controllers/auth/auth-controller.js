@@ -74,7 +74,7 @@ export const forgetPassword = async (req, res, next) => {
 
 // after Sending the reset email verify the code with new password and Confirm Password
 export const verifyResetCode = async (req, res, next) => {
-  const { email , resetCode } = req.body;
+  const { email , otp } = req.body;
   console.log(resetCode)
   try {
     // Hash the provided reset code

@@ -122,7 +122,7 @@ import { Link } from "react-router-dom";
 const initialState = {
   email: "",
   otp: "",
-  password: "",
+  newPassword: "",
   confirmPassword: ""
 };
 
@@ -155,7 +155,7 @@ function ResetPassword() {
   function onPasswordSubmit(event) {
     event.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
+    if (formData.newPassword !== formData.confirmPassword) {
       toast({
         title: "Passwords do not match!",
         variant: "destructive",
