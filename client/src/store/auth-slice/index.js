@@ -71,7 +71,7 @@ export const verifyOTP = createAsyncThunk(
 );
 
 export const resetPassword = createAsyncThunk(
-  "/auth/reset",
+  "/auth/update-password",
 
   async (formData) => {
     const response = await axios.post(

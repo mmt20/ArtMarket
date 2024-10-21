@@ -5,7 +5,7 @@ import { resetPasswordFormControls, otpFormControls } from "@/config"; // Assumi
 import { resetPassword ,verifyOTP } from "@/store/auth-slice"; // Assuming you have actions for verifying OTP and updating the password
 import { useState , useEffect} from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate} from "react-router-dom";
 
 const initialState = {
   email: "",
@@ -13,13 +13,17 @@ const initialState = {
   newPassword: "",
   confirmPassword: ""
 };
+const State= {
+  email:"",
+  password:"",
+}
+
 
 
 function ResetPassword() {
   
   const otpVerified = useSelector((state) => state.auth.otpVerified);
-  // const [formDataOtp, setFormDataOtp] = useState(initialState);
-  // const [otpVerified, setOtpVerified] = useState(false); // Tracks if OTP is verified
+  const navigate = useNavigate()
   const [otp, setOtp] = useState(false); // Tracks if OTP is verified
   const dispatch = useDispatch();
   const { toast } = useToast();
@@ -34,6 +38,12 @@ function ResetPassword() {
     otp:"",
     newPassword: "",
     confirmPassword: ""
+  });
+
+  const [formDataPass, setFormDataPass] = useState({
+    email: email || "",
+    password: "",
+    confirmPassword:""
   });
   useEffect(() => {
     console.log("OTP state updated:", otp);
@@ -63,19 +73,21 @@ function ResetPassword() {
   function onPasswordSubmit(event) {
     event.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
+    if (formDataPass.password !== formDataPass.confirmPassword) {
       toast({
         title: "Passwords do not match!",
         variant: "destructive",
       });
       return;
     }
-
-    dispatch(resetPassword(formData)).then((data) => {
-      if (data?.payload?.success) {
+    console.log(formDataPass)
+    dispatch(resetPassword(formDataPass)).then((data) => {
+      console.log(data?.payload)
+      if (data?.payload?.status =="success") {
         toast({
           title: "Password updated successfully.",
         });
+        navigate("/auth/login")
       } else {
         toast({
           title: "Failed to update password.",
@@ -115,8 +127,8 @@ function ResetPassword() {
         <CommonForm
           formControls={resetPasswordFormControls} // Form to handle new password
           buttonText={"Update Password"}
-          formData={formData}
-          setFormData={setFormData}
+          formData={formDataPass}
+          setFormData={setFormDataPass}
           onSubmit={onPasswordSubmit}
         />
       </>
