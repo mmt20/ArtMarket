@@ -75,12 +75,11 @@ export const forgetPassword = async (req, res, next) => {
 // after Sending the reset email verify the code with new password and Confirm Password
 export const verifyResetCode = async (req, res, next) => {
   const { email , otp } = req.body;
-  console.log(resetCode)
   try {
     // Hash the provided reset code
     const hashResetCode = crypto
       .createHash("md5")
-      .update(resetCode)
+      .update(otp)
       .digest("hex");
 
     // Find the user by reset code and check if the code is still valid
