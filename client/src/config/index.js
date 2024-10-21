@@ -23,17 +23,24 @@ export const registerFormControls = [
 ];
 
 export const resetPasswordFormControls = [
-  {
-    name: "email",
-    label: "Email",
-    placeholder: "Enter your email",
-    componentType: "input",
-    type: "email",
-  },
+  // {
+  //   name: "email",
+  //   label: "Email",
+  //   placeholder: "Enter your email",
+  //   componentType: "input",
+  //   type: "email",
+  // },
   {
     name: "password",
     label: "Password",
     placeholder: "Enter your password",
+    componentType: "input",
+    type: "password",
+  },
+  {
+    name: "confirmPassword",
+    label: "Confirm Password",
+    placeholder: "Confirm your password",
     componentType: "input",
     type: "password",
   },
@@ -68,7 +75,7 @@ export const otpFormControls = [
   {
     name: "otp",
     label: "OTP",
-    placeholder: "Enter your email",
+    placeholder: "Enter OTP",
     componentType: "otp-input",
     type: "otp",
   },

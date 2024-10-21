@@ -23,22 +23,9 @@ const allowedOrigins = [
   "http://localhost:5173", // Another allowed domain
 ];
 
-// Configure CORS middleware dynamically
-// const corsOptions = {
-//   origin: (origin, callback) => {
-//     // If the origin is in the list of allowed origins or no origin (like in Postman requests), allow it
-//     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error("Not allowed by CORS"));
-//     }
-//   },
-//   methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
-//   credentials: true, // Enable credentials (cookies, authorization headers)
-// };
+
 app.use(
   cors({
-    // origin: 'https://art-market-fbss.vercel.app',
     origin: (origin, callback) => {
       // If the origin is in the list of allowed origins or no origin (like in Postman requests), allow it
       if (!origin || allowedOrigins.indexOf(origin) !== -1) {

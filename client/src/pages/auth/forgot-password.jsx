@@ -24,7 +24,8 @@ function ForgotPassword() {
         toast({
           title: data?.payload?.message,
         });
-        navigate("/auth/reset-password")
+        console.log(formData.email)
+        navigate(`/auth/reset-password?email=${formData.email}`)
       } else {
         toast({
           title: data?.payload?.message,
