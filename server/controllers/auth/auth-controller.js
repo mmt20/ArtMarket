@@ -127,7 +127,7 @@ export const verifyResetCode = async (req, res, next) => {
 // };
 
 export const updatePassword = async (req, res) => {
-  const {email, newPassword} = req.body
+  const {email, password} = req.body
   try {
     // Find the user by the current logged-in user's id
     const user = await prisma.user.findUnique({
@@ -143,11 +143,11 @@ export const updatePassword = async (req, res) => {
 
     // Check if the current password is correct
     const isPasswordCorrect = await bcrypt.compare(
-      newPassword,
+      password,
       user.password
     );
 
-    if (!isPasswordCorrect) {
+    if (isPasswordCorrect) {
       return res.status(400).json({
         success: false,
         message: "The current password is incorrect",
@@ -163,7 +163,7 @@ export const updatePassword = async (req, res) => {
     // }
 
     // Hash the new password
-    const hashedNewPassword = await bcrypt.hash(req.body.newPassword, 12);
+    const hashedNewPassword = await bcrypt.hash(password, 12);
 
     // Update the user's password in the database
     await prisma.user.update({
