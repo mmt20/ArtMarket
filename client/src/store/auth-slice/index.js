@@ -74,7 +74,7 @@ export const resetPassword = createAsyncThunk(
   "/auth/reset",
 
   async (formData) => {
-    const response = await axios.patch(
+    const response = await axios.put(
       `https://art-market-blue.vercel.app/api/auth/update-password`,
       formData,
       {
