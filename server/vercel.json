@@ -13,8 +13,9 @@
       "methods": ["GET", "POST", "DELETE", "PUT", "OPTIONS"],
       "headers": {
         "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Origin": ["https://art-market-fbss.vercel.app", "http://localhost:5173/"],
-        "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT"
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
+        "Access-Control-Allow-Headers": "Authorization, Content-Type"
       }
     }
   ]
