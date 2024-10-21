@@ -38,7 +38,7 @@ export const loginUser = createAsyncThunk(
     return response.data;
   }
 );
-export const ForgotPassword = createAsyncThunk(
+export const forgotPassword = createAsyncThunk(
   "/auth/forgot-password",
 
   async (formData) => {
@@ -169,7 +169,7 @@ const authSlice = createSlice({
         state.user = null;
         state.isAuthenticated = false;
       })
-      
+
       .addCase(checkAuth.pending, (state) => {
         state.isLoading = true;
       })

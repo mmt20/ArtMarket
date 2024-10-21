@@ -1,7 +1,7 @@
 import CommonForm from "@/components/common/form";
 import { useToast } from "@/components/ui/use-toast";
 import { forgotPasswordFormControls } from "@/config";
-import { ForgotPassword } from "@/store/auth-slice";
+import { forgotPassword } from "@/store/auth-slice";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -19,7 +19,7 @@ function ForgotPassword() {
   function onSubmit(event) {
     event.preventDefault();
 
-    dispatch(ForgotPassword(formData)).then((data) => {
+    dispatch(forgotPassword(formData)).then((data) => {
       if (data?.payload?.success) {
         toast({
           title: data?.payload?.message,
