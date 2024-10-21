@@ -24,7 +24,7 @@ function ForgotPassword() {
         toast({
           title: data?.payload?.message,
         });
-        navigate("/auth/reset-password")
+        navigate("/auth/otp-verification")
       } else {
         toast({
           title: data?.payload?.message,

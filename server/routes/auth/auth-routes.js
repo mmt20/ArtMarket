@@ -5,8 +5,8 @@ const router = express.Router();
 
 router.post("/register", registerUser);
 router.post("/forgot-password", forgetPassword);
-router.post("/reset-password", verifyResetCode);
-router.patch('/update-password', authMiddleware ,updatePassword);
+router.post("/otp-verification", verifyResetCode);
+router.patch('/update-password' ,updatePassword);
 
 router.post("/login", loginUser);
 router.post("/logout", logoutUser);

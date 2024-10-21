@@ -22,6 +22,23 @@ export const registerFormControls = [
   },
 ];
 
+export const resetPasswordFormControls = [
+  {
+    name: "email",
+    label: "Email",
+    placeholder: "Enter your email",
+    componentType: "input",
+    type: "email",
+  },
+  {
+    name: "password",
+    label: "Password",
+    placeholder: "Enter your password",
+    componentType: "input",
+    type: "password",
+  },
+];
+
 export const loginFormControls = [
   {
     name: "email",
@@ -45,6 +62,15 @@ export const forgotPasswordFormControls = [
     placeholder: "Enter your email",
     componentType: "input",
     type: "email",
+  },
+];
+export const otpFormControls = [
+  {
+    name: "otp",
+    label: "OTP",
+    placeholder: "Enter your email",
+    componentType: "otp-input",
+    type: "otp",
   },
 ];
 

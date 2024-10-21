@@ -74,7 +74,7 @@ export const forgetPassword = async (req, res, next) => {
 
 // after Sending the reset email verify the code with new password and Confirm Password
 export const verifyResetCode = async (req, res, next) => {
-  const { email , resetCode , password} = req.body;
+  const { email , resetCode } = req.body;
   console.log(resetCode)
   try {
     // Hash the provided reset code
@@ -88,10 +88,6 @@ export const verifyResetCode = async (req, res, next) => {
       where: {
         email:email,
         passwordResetCode: hashResetCode,
-        // passwordResetExpires: {
-        //   gt: new Date(), // the reset code hasn't expired
-        // },
-        
       },
     });
     
@@ -102,22 +98,13 @@ export const verifyResetCode = async (req, res, next) => {
       });
     }
 
-    // Check if password and confirmPassword match
-    // if (req.body.password !== req.body.confirmPassword) {
-    //   return res.json({
-    //     success: false,
-    //     message: "Password does not match Confirm Password",
-    //   });
-    // }
-
     // Hash the new password
-    const hashedPassword = await bcrypt.hash(req.body.password, 12);
+    // const hashedPassword = await bcrypt.hash(req.body.password, 12);
 
-    // // Update the user with the new password
+    // // // Update the user with the new password
     await prisma.user.update({
       where: { email },
       data: {
-        password: hashedPassword,
         passwordResetCode: null,
         passwordResetExpires: null,
         passwordResetVerified: true,
@@ -129,7 +116,6 @@ export const verifyResetCode = async (req, res, next) => {
       .status(200)
       .json({ success: true, message: "OTP verification successful" });
 
-    next() 
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: "An error occurred" });
@@ -142,11 +128,11 @@ export const verifyResetCode = async (req, res, next) => {
 // };
 
 export const updatePassword = async (req, res) => {
-  
+  const {email, newPassword} = req.body
   try {
     // Find the user by the current logged-in user's id
     const user = await prisma.user.findUnique({
-      where: { id: req.currentUser.id },
+      where: { email },
     });
 
     if (!user) {
@@ -158,7 +144,7 @@ export const updatePassword = async (req, res) => {
 
     // Check if the current password is correct
     const isPasswordCorrect = await bcrypt.compare(
-      req.body.currentPassword,
+      newPassword,
       user.password
     );
 
@@ -170,22 +156,22 @@ export const updatePassword = async (req, res) => {
     }
 
     // Check if newPassword and confirmPassword match
-    if (req.body.newPassword !== req.body.confirmPassword) {
-      return res.status(400).json({
-        success: false,
-        message: "New password and confirm password do not match",
-      });
-    }
+    // if (req.body.newPassword !== req.body.confirmPassword) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "New password and confirm password do not match",
+    //   });
+    // }
 
     // Hash the new password
     const hashedNewPassword = await bcrypt.hash(req.body.newPassword, 12);
 
     // Update the user's password in the database
     await prisma.user.update({
-      where: { id: user.id },
+      where: { email },
       data: {
         password: hashedNewPassword,
-        passwordChangedAt: new Date(),
+        // passwordChangedAt: new Date(),
       },
     });
 

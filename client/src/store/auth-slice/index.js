@@ -53,12 +53,27 @@ export const forgotPassword = createAsyncThunk(
     return response.data;
   }
 );
-
-export const resetpassword = createAsyncThunk(
-  "/auth/reset",
+export const verifyOTP = createAsyncThunk(
+  "/auth/otp-verification",
 
   async (formData) => {
     const response = await axios.post(
+      `https://art-market-blue.vercel.app/api/auth/otp-verification`,
+      formData,
+      {
+        withCredentials: true,
+      }
+    );
+
+    return response.data;
+  }
+);
+
+export const resetPassword = createAsyncThunk(
+  "/auth/reset",
+
+  async (formData) => {
+    const response = await axios.patch(
       `https://art-market-blue.vercel.app/api/auth/reset-password`,
       formData,
       {
@@ -126,15 +141,28 @@ const authSlice = createSlice({
         state.user = null;
         state.isAuthenticated = false;
       })
-      .addCase(resetpassword.pending, (state) => {
+      .addCase(resetPassword.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(resetpassword.fulfilled, (state, action) => {
+      .addCase(resetPassword.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = null;
         state.isAuthenticated = false;
       })
-      .addCase(resetpassword.rejected, (state, action) => {
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.user = null;
+        state.isAuthenticated = false;
+      })
+      .addCase(verifyOTP.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(verifyOTP.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = null;
+        state.isAuthenticated = false;
+      })
+      .addCase(verifyOTP.rejected, (state, action) => {
         state.isLoading = false;
         state.user = null;
         state.isAuthenticated = false;
