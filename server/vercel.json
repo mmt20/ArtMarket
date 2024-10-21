@@ -10,7 +10,7 @@
     {
       "src": "/(.*)",
       "dest": "server.js",
-      "methods": ["GET", "POST", "DELETE", "PUT", "OPTIONS"],
+      "methods": ["GET", "POST", "DELETE", "PUT", "OPTIONS","PATCH"],
       "headers": {
         "Access-Control-Allow-Credentials": "true", 
         "Access-Control-Allow-Origin": "http://localhost:5173", 
@@ -21,7 +21,7 @@
     {
       "src": "/(.*)",
       "dest": "server.js",
-      "methods": ["GET", "POST", "DELETE", "PUT", "OPTIONS"],
+      "methods": ["GET", "POST", "DELETE", "PUT", "OPTIONS","PATCH"],
       "headers": {
         "Access-Control-Allow-Credentials": "true",
         "Access-Control-Allow-Origin": "https://art-market-blue.vercel.app", 

@@ -3,8 +3,8 @@ import CommonForm from "@/components/common/form";
 import { useToast } from "@/components/ui/use-toast";
 import { resetPasswordFormControls, otpFormControls } from "@/config"; // Assuming `otpFormControls` exists
 import { resetPassword ,verifyOTP } from "@/store/auth-slice"; // Assuming you have actions for verifying OTP and updating the password
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useState , useEffect} from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 
 const initialState = {
@@ -17,8 +17,10 @@ const initialState = {
 
 function ResetPassword() {
   
+  const otpVerified = useSelector((state) => state.auth.otpVerified);
   // const [formDataOtp, setFormDataOtp] = useState(initialState);
-  const [otpVerified, setOtpVerified] = useState(false); // Tracks if OTP is verified
+  // const [otpVerified, setOtpVerified] = useState(false); // Tracks if OTP is verified
+  const [otp, setOtp] = useState(false); // Tracks if OTP is verified
   const dispatch = useDispatch();
   const { toast } = useToast();
   const location = useLocation();
@@ -33,18 +35,18 @@ function ResetPassword() {
     newPassword: "",
     confirmPassword: ""
   });
-  // setFormData(...formData, email)
-  // console.log(otpVerified)
-
-  // OTP verification form submission
+  useEffect(() => {
+    console.log("OTP state updated:", otp);
+  }, [otpVerified]); // This will log whenever the otp state changes
   function onOTPSubmit(event) {
     event.preventDefault();
-
+    
     dispatch(verifyOTP(formData)).then((data) => {
       console.log("OTP Verification Response:", data);
       if (data?.payload?.success) {
-        // if(data?.payload?.meta?.arg?.otp?)
-        setOtpVerified(true); // OTP is correct, switch to password form
+        // setOtpVerified(true); 
+        // setOtp(true); 
+        // console.log(otp)
         toast({
           title: "OTP Verified. Please enter your new password.",
         });
@@ -69,7 +71,7 @@ function ResetPassword() {
       return;
     }
 
-    dispatch(updatePassword(formData)).then((data) => {
+    dispatch(resetPassword(formData)).then((data) => {
       if (data?.payload?.success) {
         toast({
           title: "Password updated successfully.",
@@ -100,7 +102,6 @@ function ResetPassword() {
         </p>
       </div>
 
-      {/* Conditional rendering based on whether OTP is verified */}
       {!otpVerified ? (
         <CommonForm
           formControls={otpFormControls} // Form to handle OTP input

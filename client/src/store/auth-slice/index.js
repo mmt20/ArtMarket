@@ -5,6 +5,7 @@ const initialState = {
   isAuthenticated: false,
   isLoading: true,
   user: null,
+  otpVerified:false,
 };
 
 export const registerUser = createAsyncThunk(
@@ -160,12 +161,12 @@ const authSlice = createSlice({
       .addCase(verifyOTP.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = null;
-        state.isAuthenticated = false;
+        state.otpVerified = true;
       })
       .addCase(verifyOTP.rejected, (state, action) => {
         state.isLoading = false;
         state.user = null;
-        state.isAuthenticated = false;
+        state.otpVerified = false;
       })
       .addCase(loginUser.pending, (state) => {
         state.isLoading = true;
