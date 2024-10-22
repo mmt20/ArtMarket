@@ -26,7 +26,7 @@ export const stripeWebhook = async (req, res) => {
     const session = event.data.object;
 
     try {
-      await createOrder();
+      await createOrder(session);
     } catch (error) {
       return res.status(500).json({ error: 'Internal server error' });
     }
@@ -36,8 +36,10 @@ export const stripeWebhook = async (req, res) => {
   res.status(200).json({ received: true });
 };
 
-export const createOrder = async (req, res) => {
-  const { cartId, userId, addressId } = req.body;
+export const createOrder = async (session) => {
+  const cartId = session.metadata.cartId;
+  const userId = session.metadata.userId;
+  const addressId = session.metadata.addressId;
 
   try {
     // Fetch cart items from the database
@@ -73,14 +75,18 @@ export const createOrder = async (req, res) => {
       customer_email: (
         await prisma.user.findUnique({ where: { id: userId } })
       ).email,
-      metadata: { cartId: cartId.toString(), userId: userId.toString() },
+      metadata: {
+        cartId: cartId.toString(),
+        userId: userId.toString(),
+        addressId: session.metadata.addressId,
+      },
     });
 
     const newOrder = await prisma.order.create({
       data: {
         userId: parseInt(userId),
         cartId: parseInt(cartId),
-        addressId,
+        addressId: parseInt(addressId),
         totalAmount: session.amount_total / 100,
         orderStatus: 'completed',
         paymentStatus: 'paid',
