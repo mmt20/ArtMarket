@@ -2,8 +2,9 @@ import paypal from '../../helpers/paypal.js';
 import { PrismaClient } from '@prisma/client';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(sk_test_51QCKeKBGwlrORfS3cvFWRw3A2r00Tu4wGc9hN2fx6br9GPPiy2G6xzAHBrOn2Pp8QZqj3mB47Ga8JVXOHIHE9I0K008vfg7qVH);
-
+const stripe = new Stripe(process.env.STRIPE_SECRET, {
+  apiVersion: "2022-11-15",
+});
 const prisma = new PrismaClient();
 
 
@@ -39,8 +40,8 @@ export const createOrder = async (req, res)=>{
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
-      success_url: `http://localhost:5173/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `http://localhost:5173/checkout-cancel`,
+      success_url: `http://localhost:5173/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `http://localhost:5173/cancel`,
       customer_email: (await prisma.user.findUnique({ where: { id: userId } })).email,
       metadata: { cartId: cartId.toString(), userId: userId.toString() },
     });

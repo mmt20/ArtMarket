@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { createNewOrder } from "@/store/shop/order-slice"; // Stripe action
 import { useToast } from "@/components/ui/use-toast";
 
+
 function ShoppingCheckout() {
   const { cartItems } = useSelector((state) => state.shopCart); // Cart items from the store
   const { user } = useSelector((state) => state.auth); // User data from auth state
