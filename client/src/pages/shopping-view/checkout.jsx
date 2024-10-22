@@ -10,7 +10,7 @@ import { useToast } from "@/components/ui/use-toast";
 function ShoppingCheckout() {
   const { cartItems } = useSelector((state) => state.shopCart); // Cart items from the store
   const { user } = useSelector((state) => state.auth); // User data from auth state
-  const { stripeSessionId, isLoading } = useSelector((state) => state.shopOrder); // Stripe session ID
+  const { stripeSessionId, isLoading , approvalURL} = useSelector((state) => state.shopOrder); // Stripe session ID
   const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null); // Selected address
   const [isPaymentStart, setIsPaymentStart] = useState(false); // Payment start state
   const dispatch = useDispatch(); // Dispatch action
@@ -54,15 +54,13 @@ function ShoppingCheckout() {
       userId: user?.id,
       addressId: currentSelectedAddress?.id.toString(),
     };
-
-    console.log(orderData)
     dispatch(createNewOrder(orderData));
   }
-
+    console.log(approvalURL)
   // Redirect to Stripe if the session is created
   useEffect(() => {
     if (stripeSessionId) {
-      window.location.href = `https://checkout.stripe.com/pay/${stripeSessionId}`;
+      window.location.href = approvalURL;
     }
   }, [stripeSessionId]);
 

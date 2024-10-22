@@ -56,7 +56,6 @@ export const getOrderDetails = createAsyncThunk(
     return response.data;
   }
 );
-
 // Redux slice
 const shoppingOrderSlice = createSlice({
   name: "shoppingOrderSlice",
@@ -75,6 +74,7 @@ const shoppingOrderSlice = createSlice({
         state.isLoading = false;
         state.stripeSessionId = action.payload.id; // Stripe session ID
         state.orderId = action.payload.orderId; // Order ID returned by backend
+        state.approvalURL=action.payload.url
       })
       .addCase(createNewOrder.rejected, (state) => {
         state.isLoading = false;

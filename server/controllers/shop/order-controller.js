@@ -40,8 +40,8 @@ export const createOrder = async (req, res)=>{
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
-      success_url: `http://localhost:5173/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `http://localhost:5173/cancel`,
+      success_url: `http://localhost:5173/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `http://localhost:5173/checkout-cancel`,
       customer_email: (await prisma.user.findUnique({ where: { id: userId } })).email,
       metadata: { cartId: cartId.toString(), userId: userId.toString() },
     });
@@ -64,7 +64,7 @@ export const createOrder = async (req, res)=>{
 
     // Return session ID to the client
     // res.json({ lineItems });
-    res.json({ id: session.id , orderId:newOrder.id});
+    res.json({ id: session.id , orderId:newOrder.id, url:session.url});
   } catch (error) {
     console.error('Error creating checkout session:', error);
     res.status(500).json({ error: 'Internal server error' });
