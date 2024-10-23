@@ -6,10 +6,11 @@ const stripe = new Stripe(process.env.STRIPE_SECRET, {
 });
 const prisma = new PrismaClient();
 
+// Stripe Webhook for handling checkout completion
 export const stripeWebhook = async (req, res) => {
   const sig = req.headers['stripe-signature'];
-
   let event;
+
   try {
     event = stripe.webhooks.constructEvent(
       req.body,
@@ -22,7 +23,6 @@ export const stripeWebhook = async (req, res) => {
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
-
     try {
       await createOrder(session);
     } catch (error) {
@@ -84,15 +84,12 @@ export const capturePayment = async (req, res) => {
     });
 
     if (!order) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'Order cannot be found' });
+      return res.status(404).json({ success: false, message: 'Order not found' });
     }
 
     // Retrieve payment session
     const session = await stripe.checkout.sessions.retrieve(paymentId);
     if (session.payment_status === 'paid') {
-      // Update order status
       await prisma.order.update({
         where: { id: parseInt(order.id) },
         data: {
@@ -103,7 +100,7 @@ export const capturePayment = async (req, res) => {
       });
 
       // Update product stock
-      for (let item of order.cartItems) {
+      for (let item of order.cart.items) {
         let product = await prisma.product.findUnique({
           where: { id: parseInt(item.productId) },
         });
@@ -111,9 +108,7 @@ export const capturePayment = async (req, res) => {
         if (!product || product.totalStock < item.quantity) {
           return res.status(404).json({
             success: false,
-            message: `Not enough stock for this product ${
-              product ? product.title : 'N/A'
-            }`,
+            message: `Not enough stock for product ${product ? product.title : 'N/A'}`,
           });
         }
 
@@ -128,13 +123,9 @@ export const capturePayment = async (req, res) => {
       // Delete the cart after successful payment
       await prisma.cart.delete({ where: { id: order.cartId } });
 
-      return res
-        .status(200)
-        .json({ success: true, message: 'Order confirmed', data: order });
+      return res.status(200).json({ success: true, message: 'Order confirmed', data: order });
     } else {
-      return res
-        .status(400)
-        .json({ success: false, message: 'Payment not completed' });
+      return res.status(400).json({ success: false, message: 'Payment not completed' });
     }
   } catch (error) {
     console.error('Error capturing payment:', error);
@@ -152,13 +143,11 @@ export const getAllOrdersByUser = async (req, res) => {
 
     const orders = await prisma.order.findMany({
       where: { userId: parseInt(userId) },
-      include: { cart: true }, // Optionally include cart details
+      include: { cart: true },
     });
 
     if (!orders.length) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'No orders found!' });
+      return res.status(404).json({ success: false, message: 'No orders found!' });
     }
 
     res.status(200).json({ success: true, data: orders });
@@ -175,13 +164,11 @@ export const getOrderDetails = async (req, res) => {
 
     const order = await prisma.order.findUnique({
       where: { id: parseInt(id) },
-      include: { cart: true }, // Optionally include cart details
+      include: { cart: true },
     });
 
     if (!order) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'Order not found!' });
+      return res.status(404).json({ success: false, message: 'Order not found!' });
     }
 
     res.status(200).json({ success: true, data: order });
