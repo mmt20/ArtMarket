@@ -52,11 +52,7 @@ function ResetPassword() {
     event.preventDefault();
     
     dispatch(verifyOTP(formData)).then((data) => {
-      console.log("OTP Verification Response:", data);
       if (data?.payload?.success) {
-        // setOtpVerified(true); 
-        // setOtp(true); 
-        // console.log(otp)
         toast({
           title: "OTP Verified. Please enter your new password.",
         });
@@ -80,9 +76,7 @@ function ResetPassword() {
       });
       return;
     }
-    console.log(formDataPass)
     dispatch(resetPassword(formDataPass)).then((data) => {
-      console.log(data?.payload)
       if (data?.payload?.status =="success") {
         toast({
           title: "Password updated successfully.",

@@ -54,7 +54,7 @@ function ProductImageUpload({
     data.append("image", imageFile);
 
     const response = await axios.post(
-      `${process.env.SERVER_URL}api/admin/products/upload-image`,
+      `https://art-market-blue.vercel.app/api/admin/products/upload-image`,
       data,{
         headers: {
           'Content-Type': 'multipart/form-data',

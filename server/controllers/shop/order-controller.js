@@ -1,126 +1,110 @@
-import paypal from "../../helpers/paypal.js";
+import paypal from '../../helpers/paypal.js';
 import { PrismaClient } from '@prisma/client';
+import Stripe from 'stripe';
 
+const stripe = new Stripe(process.env.STRIPE_SECRET, {
+  apiVersion: "2022-11-15",
+});
 const prisma = new PrismaClient();
 
-// Create Order
-export const createOrder = async (req, res) => {
+
+export const createOrder = async (req, res)=>{
+  const { cartId, userId , addressId} = req.body;
+
   try {
-    const {
-      userId,
-      cartItems,
-      addressInfo,
-      orderStatus,
-      paymentMethod,
-      paymentStatus,
-      totalAmount,
-      orderDate,
-      orderUpdateDate,
-      paymentId,
-      payerId,
-      cartId,
-    } = req.body;
+    // Fetch cart items from the database
+    const cart = await prisma.cart.findUnique({
+      where: { id: cartId },
+      include: { items: { include: { product: true } } },
+    });
 
-    const create_payment_json = {
-      intent: "sale",
-      payer: {
-        payment_method: "paypal",
-      },
-      redirect_urls: {
-        return_url: "http://localhost:5173/shop/paypal-return",
-        cancel_url: "http://localhost:5173/shop/paypal-cancel",
-      },
-      transactions: [
-        {
-          item_list: {
-            items: cartItems.map((item) => ({
-              name: item.title,
-              sku: item.productId,
-              price: item.price.toFixed(2),
-              currency: "USD",
-              quantity: item.quantity,
-            })),
-          },
-          amount: {
-            currency: "USD",
-            total: totalAmount.toFixed(2),
-          },
-          description: "description",
+    if (!cart) {
+      return res.status(404).json({ error: 'Cart not found' });
+    }
+
+    // Format the items for Stripe
+    const lineItems = cart.items.map(item => ({
+      price_data: {
+        currency: 'usd',
+        product_data: {
+          name: item.product.title,
+          description: item.product.description,
         },
-      ],
-    };
+        unit_amount: Math.round(item.product.price * 100),
+      },
+      quantity: item.quantity,
+    }));
 
-    paypal.payment.create(create_payment_json, async (error, paymentInfo) => {
-      if (error) {
-        console.log(error);
-        return res.status(500).json({
-          success: false,
-          message: "Error while creating PayPal payment",
-        });
-      } else {
-        const newlyCreatedOrder = await prisma.order.create({
-          data: {
-            userId: parseInt(userId),
-            cartId,
-            cartItems,
-            addressInfo,
-            orderStatus,
-            paymentMethod,
-            paymentStatus,
-            totalAmount,
-            orderDate,
-            orderUpdateDate,
-            paymentId,
-            payerId,
-          },
-        });
-
-        const approvalURL = paymentInfo.links.find(
-          (link) => link.rel === "approval_url"
-        ).href;
-
-        res.status(201).json({
-          success: true,
-          approvalURL,
-          orderId: newlyCreatedOrder.id,
-        });
-      }
+    // Create the Stripe checkout session
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: lineItems,
+      mode: 'payment',
+      success_url: `http://localhost:5173/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `http://localhost:5173/checkout-cancel`,
+      customer_email: (await prisma.user.findUnique({ where: { id: userId } })).email,
+      metadata: { cartId: cartId.toString(), userId: userId.toString() },
     });
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({
-      success: false,
-      message: "Some error occurred!",
+
+    const newOrder = await prisma.order.create({
+      data: {
+        userId: parseInt(userId),
+        cartId: parseInt(cartId),
+        addressId,
+        totalAmount: session.amount_total / 100,
+        orderStatus: 'completed',
+        paymentStatus: 'paid',
+        paymentMethod: 'stripe',
+        paymentId: session.payment_intent,
+        payerId: session.customer,
+        orderDate: new Date(),
+        orderUpdateDate: new Date(),
+      },
     });
+
+    // Return session ID to the client
+    // res.json({ lineItems });
+    res.json({ id: session.id , orderId:newOrder.id, url:session.url});
+  } catch (error) {
+    console.error('Error creating checkout session:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
-};
-
+}
 // Capture Payment
 export const capturePayment = async (req, res) => {
   try {
-    const { paymentId, payerId, orderId } = req.body;
+    const { paymentId, orderId } = req.body;
 
     let order = await prisma.order.findUnique({
       where: { id: parseInt(orderId) },
-      include: { cartItems: true },
+      // include: { cartItems: true },
     });
 
     if (!order) {
       return res.status(404).json({
         success: false,
-        message: "Order cannot be found",
+        message: 'Order cannot be found',
       });
     }
 
-    order = await prisma.order.update({
-      where: { id: parseInt(order.id) },
-      data: {
-        paymentStatus: "paid",
-        orderStatus: "confirmed",
-        paymentId,
-        payerId,
-      },
-    });
+    
+    const session = await stripe.checkout.sessions.retrieve(paymentId);
+      if (session.payment_status === 'paid') {
+        order = await prisma.order.update({
+          where: { id: parseInt(order.id) },
+          data: {
+            paymentStatus: 'paid',
+            orderStatus: 'confirmed',
+            paymentId,
+          },
+        });
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: 'Payment not completed',
+        });
+      }
+    
 
     // Update product stock
     for (let item of order.cartItems) {
@@ -131,7 +115,9 @@ export const capturePayment = async (req, res) => {
       if (!product || product.totalStock < item.quantity) {
         return res.status(404).json({
           success: false,
-          message: `Not enough stock for this product ${product ? product.title : 'N/A'}`,
+          message: `Not enough stock for this product ${
+            product ? product.title : 'N/A'
+          }`,
         });
       }
 
@@ -149,14 +135,14 @@ export const capturePayment = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Order confirmed",
+      message: 'Order confirmed',
       data: order,
     });
   } catch (e) {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Some error occurred!",
+      message: 'Some error occurred!',
     });
   }
 };
@@ -173,7 +159,7 @@ export const getAllOrdersByUser = async (req, res) => {
     if (!orders.length) {
       return res.status(404).json({
         success: false,
-        message: "No orders found!",
+        message: 'No orders found!',
       });
     }
 
@@ -185,7 +171,7 @@ export const getAllOrdersByUser = async (req, res) => {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Some error occurred!",
+      message: 'Some error occurred!',
     });
   }
 };
@@ -202,7 +188,7 @@ export const getOrderDetails = async (req, res) => {
     if (!order) {
       return res.status(404).json({
         success: false,
-        message: "Order not found!",
+        message: 'Order not found!',
       });
     }
 
@@ -214,7 +200,7 @@ export const getOrderDetails = async (req, res) => {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Some error occurred!",
+      message: 'Some error occurred!',
     });
   }
 };
